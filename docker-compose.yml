@@ -1,0 +1,27 @@
+version: "2"
+
+services:
+  vpn:
+    build: .
+    ports:
+      - 443:443
+      - 1194:1194/udp
+    volumes:
+      - ./vpn:/etc/openvpn
+      - /etc/localtime:/etc/localtime:ro
+    privileged: true
+    environment:
+      - TZ=America/Los_Angeles
+    depends_on:
+      - serveconfig
+    entrypoint: 
+      - /bin/sh 
+      - -c 
+      - run
+  serveconfig:
+    build: .
+    ports:
+      - 8081:8080
+    volumes_from:
+      - vpn
+    entrypoint: serveconfig
